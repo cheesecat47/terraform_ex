@@ -285,3 +285,60 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
   azurerm_resource_group.rg
   azurerm_virtual_network.vnet
   ```
+
+## 리소스 제거
+
+```bash
+terraform_ex/01.Terraform using ☁️ Azure subscription 1 …
+➜ terraform destroy   
+azurerm_resource_group.rg: Refreshing state... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group]
+azurerm_virtual_network.vnet: Refreshing state... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group/providers/Microsoft.Network/virtualNetworks/terraform_ex_vnet]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # azurerm_resource_group.rg will be destroyed
+  - resource "azurerm_resource_group" "rg" {
+      - id         = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group" -> null
+      - location   = "koreacentral" -> null
+      - name       = "terraform_ex_resource_group" -> null
+      - tags       = {} -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # azurerm_virtual_network.vnet will be destroyed
+  - resource "azurerm_virtual_network" "vnet" {
+      - address_space           = [
+          - "10.0.0.0/16",
+        ] -> null
+      - dns_servers             = [] -> null
+      - flow_timeout_in_minutes = 0 -> null
+      - guid                    = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" -> null
+      - id                      = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group/providers/Microsoft.Network/virtualNetworks/terraform_ex_vnet" -> null
+      - location                = "koreacentral" -> null
+      - name                    = "terraform_ex_vnet" -> null
+      - resource_group_name     = "terraform_ex_resource_group" -> null
+      - subnet                  = [] -> null
+      - tags                    = {} -> null
+        # (2 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 2 to destroy.
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+
+azurerm_virtual_network.vnet: Destroying... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group/providers/Microsoft.Network/virtualNetworks/terraform_ex_vnet]
+azurerm_virtual_network.vnet: Still destroying... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-...work/virtualNetworks/terraform_ex_vnet, 10s elapsed]
+azurerm_virtual_network.vnet: Destruction complete after 11s
+azurerm_resource_group.rg: Destroying... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group]
+azurerm_resource_group.rg: Still destroying... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-...urceGroups/terraform_ex_resource_group, 10s elapsed]
+azurerm_resource_group.rg: Destruction complete after 16s
+
+Destroy complete! Resources: 2 destroyed.
+```
