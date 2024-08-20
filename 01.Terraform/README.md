@@ -166,9 +166,9 @@ azurerm_resource_group.rg: Creation complete after 8s [id=/subscriptions/xxxxxxx
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 ```
 
-Azure 포털에서 리소스 그룹 생성 확인
+- Azure 포털에서 리소스 그룹 생성 확인
 
-![Azure Portal](../99.stuff/img1.png)
+  ![Azure Portal](../99.stuff/img1.png)
 
 ## 현재 상태 확인
 
@@ -192,3 +192,96 @@ Azure 포털에서 리소스 그룹 생성 확인
   azurerm_resource_group.rg
   ```
 
+## 새 리소스 추가
+
+```terraform
+# main.tf
+
+...
+
+resource "azurerm_virtual_network" "vnet" {
+  name = "terraform_ex_vnet"
+  address_space = [ "10.0.0.0/16" ]
+  location = "koreacentral"
+  resource_group_name = azurerm_resource_group.rg.name
+}
+```
+
+```bash
+terraform_ex/01.Terraform using ☁️ Azure subscription 1 …
+➜ terraform apply     
+azurerm_resource_group.rg: Refreshing state... [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # azurerm_virtual_network.vnet will be created
+  + resource "azurerm_virtual_network" "vnet" {
+      + address_space       = [
+          + "10.0.0.0/16",
+        ]
+      + dns_servers         = (known after apply)
+      + guid                = (known after apply)
+      + id                  = (known after apply)
+      + location            = "koreacentral"
+      + name                = "terraform_ex_vnet"
+      + resource_group_name = "terraform_ex_resource_group"
+      + subnet              = (known after apply)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+azurerm_virtual_network.vnet: Creating...
+azurerm_virtual_network.vnet: Creation complete after 4s [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group/providers/Microsoft.Network/virtualNetworks/terraform_ex_vnet]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+```
+
+- Azure 포털에서 리소스 그룹 생성 확인
+
+  ![Azure Portal](../99.stuff/img2.png)
+
+- CLI로 확인
+
+  ```bash
+  terraform_ex/01.Terraform using ☁️ Azure subscription 1 …
+  ➜ terraform show      
+  # azurerm_resource_group.rg:
+  resource "azurerm_resource_group" "rg" {
+      id         = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group"
+      location   = "koreacentral"
+      managed_by = null
+      name       = "terraform_ex_resource_group"
+      tags       = {}
+  }
+
+  # azurerm_virtual_network.vnet:
+  resource "azurerm_virtual_network" "vnet" {
+      address_space           = [
+          "10.0.0.0/16",
+      ]
+      bgp_community           = null
+      dns_servers             = []
+      edge_zone               = null
+      flow_timeout_in_minutes = 0
+      guid                    = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      id                      = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/terraform_ex_resource_group/providers/Microsoft.Network/virtualNetworks/terraform_ex_vnet"
+      location                = "koreacentral"
+      name                    = "terraform_ex_vnet"
+      resource_group_name     = "terraform_ex_resource_group"
+      subnet                  = []
+  }
+
+  terraform_ex/01.Terraform using ☁️ Azure subscription 1 …
+  ➜ terraform state list
+  azurerm_resource_group.rg
+  azurerm_virtual_network.vnet
+  ```
