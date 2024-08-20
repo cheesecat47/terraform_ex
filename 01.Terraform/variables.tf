@@ -5,3 +5,7 @@ variable "resource_group_name" {
 variable "location" {
   default = "koreacentral"
 }
+
+variable "vm_admin_username" {
+  default = "azureuser"
+}

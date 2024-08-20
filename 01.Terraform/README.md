@@ -342,3 +342,24 @@ azurerm_resource_group.rg: Destruction complete after 16s
 
 Destroy complete! Resources: 2 destroyed.
 ```
+
+## Public Key 확인
+
+1. pubkey 복사
+
+  ```bash
+  Outputs:
+
+  publicKey = "ssh-rsa AAA... generated-by-azure"
+  ```
+
+2. pubkey 파일 생성
+
+  ```bash
+  echo "ssh-rsa AAA... generated-by-azure" > ~/.ssh/azure_pubkey.pem
+  chmod 400 ~/.ssh/azure_pubkey.pem
+  ```
+
+## 추가 참고 자료
+
+- <https://learn.microsoft.com/ko-kr/azure/virtual-machines/linux/quick-cluster-create-terraform?tabs=azure-cli>
