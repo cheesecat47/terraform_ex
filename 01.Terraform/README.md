@@ -343,22 +343,15 @@ azurerm_resource_group.rg: Destruction complete after 16s
 Destroy complete! Resources: 2 destroyed.
 ```
 
-## Public Key 확인
+## SSH 접속
 
-1. pubkey 복사
-
-  ```bash
-  Outputs:
-
-  publicKey = "ssh-rsa AAA... generated-by-azure"
-  ```
-
-2. pubkey 파일 생성
-
-  ```bash
-  echo "ssh-rsa AAA... generated-by-azure" > ~/.ssh/azure_pubkey.pem
-  chmod 400 ~/.ssh/azure_pubkey.pem
-  ```
+```bash
+terraform_ex/01.Terraform using ☁️ Azure subscription 1 …
+➜ ssh -i keyfile "azureuser@$(terraform output -raw public_ip)"
+Welcome to Ubuntu 24.04 LTS (GNU/Linux 6.8.0-1012-azure x86_64)
+# ...
+azureuser@ubuntu:~$
+```
 
 ## 추가 참고 자료
 

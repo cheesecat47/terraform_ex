@@ -15,10 +15,8 @@ resource "azapi_resource_action" "pubkey_gen" {
   response_export_values = ["publicKey", "privateKey"]
 }
 
-output "publicKey" {
-  value = azapi_resource_action.pubkey_gen.output.publicKey
-}
-
-output "privateKey" {
-  value = azapi_resource_action.pubkey_gen.output.privateKey
+resource "local_file" "keyfile" {
+  content  = azapi_resource_action.pubkey_gen.output.privateKey
+  filename = "${path.module}/keyfile"
+  file_permission = "0400"
 }

@@ -5,9 +5,14 @@ terraform {
       version = "~> 3.116.0"
     }
 
+    local = {
+      source = "hashicorp/local"
+      version = "~> 2.5.1"
+    }
+
     azapi = {
       source  = "azure/azapi"
-      version = "~>1.15"
+      version = "~> 1.15"
     }
   }
 
