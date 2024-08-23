@@ -16,7 +16,7 @@ resource "azapi_resource_action" "pubkey_gen" {
 }
 
 resource "local_file" "keyfile" {
-  content  = azapi_resource_action.pubkey_gen.output.privateKey
-  filename = "${path.module}/keyfile"
+  content         = azapi_resource_action.pubkey_gen.output.privateKey
+  filename        = "${path.module}/keyfile"
   file_permission = "0400"
 }

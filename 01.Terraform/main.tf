@@ -107,19 +107,19 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
   }
 
   connection {
-    type = "ssh"
-    user = self.admin_username
-    host = self.public_ip_address
+    type        = "ssh"
+    user        = self.admin_username
+    host        = self.public_ip_address
     private_key = azapi_resource_action.pubkey_gen.output.privateKey
   }
 
   provisioner "file" {
-    source = "./ansible"
+    source      = "./ansible"
     destination = "/tmp/ansible"
   }
 
   provisioner "remote-exec" {
-    inline = [ 
+    inline = [
       "chmod +x /tmp/ansible/install_ansible.sh",
       "/tmp/ansible/install_ansible.sh",
     ]
