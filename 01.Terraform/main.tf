@@ -127,7 +127,7 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
 }
 
 resource "azurerm_network_interface" "managed_node_nic" {
-  count               = 3
+  count               = var.managed_node_count
   name                = "terraform_ex_nic_managed_node_${count.index + 1}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -141,7 +141,7 @@ resource "azurerm_network_interface" "managed_node_nic" {
 }
 
 resource "azurerm_linux_virtual_machine" "vm_managed_node" {
-  count               = 3
+  count               = var.managed_node_count
   name                = "terraform_ex_vm_managed_node_${count.index + 1}"
   computer_name       = "ubuntu"
   location            = azurerm_resource_group.rg.location

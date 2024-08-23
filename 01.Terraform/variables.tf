@@ -9,3 +9,7 @@ variable "location" {
 variable "vm_admin_username" {
   default = "azureuser"
 }
+
+variable "managed_node_count" {
+  default = 3
+}
