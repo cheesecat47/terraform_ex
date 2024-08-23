@@ -63,7 +63,8 @@ resource "azurerm_network_interface" "nic" {
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.0.2.10"
     public_ip_address_id          = azurerm_public_ip.pubip.id
   }
 }
@@ -74,8 +75,8 @@ resource "azurerm_network_interface_security_group_association" "nic_nsg_associa
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "terraform_ex_vm"
+resource "azurerm_linux_virtual_machine" "vm_control_node" {
+  name                = "terraform_ex_vm_control_node"
   computer_name       = "ubuntu"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -122,5 +123,51 @@ resource "azurerm_linux_virtual_machine" "vm" {
       "chmod +x /tmp/ansible/install_ansible.sh",
       "/tmp/ansible/install_ansible.sh",
     ]
+  }
+}
+
+resource "azurerm_network_interface" "managed_node_nic" {
+  count               = 3
+  name                = "terraform_ex_nic_managed_node_${count.index + 1}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.subnet.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.0.2.10${count.index}"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "vm_managed_node" {
+  count               = 3
+  name                = "terraform_ex_vm_managed_node_${count.index + 1}"
+  computer_name       = "ubuntu"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  size                = "Standard_B1ls"
+  admin_username      = var.vm_admin_username
+
+  network_interface_ids = [
+    azurerm_network_interface.managed_node_nic[count.index].id,
+  ]
+
+  os_disk {
+    name                 = "terraform_ex_vm_os_disk_${count.index + 1}"
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
+
+  admin_ssh_key {
+    username   = var.vm_admin_username
+    public_key = azapi_resource_action.pubkey_gen.output.publicKey
   }
 }
