@@ -118,7 +118,7 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
   }
 
   provisioner "file" {
-    source      = "./ansible"
+    source      = "../02.Ansible"
     destination = "/tmp/ansible"
   }
 
