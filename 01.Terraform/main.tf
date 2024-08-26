@@ -118,10 +118,22 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
     destination = "/tmp/ansible"
   }
 
+  provisioner "file" {
+    source      = "./private.key"
+    destination = "/home/${var.vm_admin_username}/.ssh/id_rsa"
+  }
+
+  provisioner "file" {
+    source      = "./public.key"
+    destination = "/home/${var.vm_admin_username}/.ssh/id_rsa.pub"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/ansible/install_ansible.sh",
       "/tmp/ansible/install_ansible.sh",
+      "chmod 0400 /home/${var.vm_admin_username}/.ssh/id_rsa*",
+      "ANSIBLE_HOST_KEY_CHECKING=False /home/${var.vm_admin_username}/.local/bin/ansible-playbook -i /tmp/ansible/inventory.yml /tmp/ansible/test.yml",
     ]
   }
 }

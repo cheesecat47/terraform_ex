@@ -347,7 +347,7 @@ Destroy complete! Resources: 2 destroyed.
 
 ```bash
 terraform_ex/01.Terraform using ☁️ Azure subscription 1 …
-➜ ssh -i keyfile "azureuser@$(terraform output -raw control_node_public_ip)"
+➜ ssh -i private.key "azureuser@$(terraform output -raw control_node_public_ip)"
 Welcome to Ubuntu 24.04 LTS (GNU/Linux 6.8.0-1012-azure x86_64)
 # ...
 azureuser@ubuntu:~$
