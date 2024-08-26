@@ -1,0 +1,8 @@
+all:
+  children:
+    control_node:
+      hosts:
+        10.0.2.10:
+    managed_node:
+      hosts:
+        10.0.2.10[0:2]:

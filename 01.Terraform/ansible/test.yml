@@ -1,0 +1,9 @@
+---
+- name: Test
+  hosts: managed_node
+  become: true
+
+  tasks:
+    - name: A
+      ansible.builtin.shell:
+        cmd: ip addr
