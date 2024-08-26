@@ -106,6 +106,10 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
     public_key = azapi_resource_action.pubkey_gen.output.publicKey
   }
 
+  depends_on = [
+    azurerm_linux_virtual_machine.vm_managed_node,
+  ]
+
   connection {
     type        = "ssh"
     user        = self.admin_username
