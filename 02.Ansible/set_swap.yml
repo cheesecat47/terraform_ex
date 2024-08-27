@@ -1,0 +1,44 @@
+---
+- name: Set swap memory
+  hosts: all
+  become: true
+
+  vars:
+    swapfile: /swapfile
+
+  tasks:
+    - name: Check swap memory status
+      ansible.builtin.shell:
+        cmd: "swapon --show"
+      register: swap_status
+
+    - name: Print checkSwapExists
+      ansible.builtin.debug:
+        var: swap_status
+
+    - name: Create swapfile
+      ansible.builtin.command:
+        cmd: "fallocate -l 2G {{ swapfile }}"
+      when: swap_status.stdout == ""
+
+    - name: Set swapfile mod
+      ansible.builtin.file:
+        path: "{{ swapfile }}"
+        mode: "0600"
+      when: swap_status.stdout == ""
+
+    - name: Mkswap
+      ansible.builtin.command:
+        cmd: "mkswap {{ swapfile }}"
+      when: swap_status.stdout == ""
+
+    - name: Swapon
+      ansible.builtin.command:
+        cmd: "swapon {{ swapfile }}"
+      when: swap_status.stdout == ""
+
+    - name: Append to fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: "{{ swapfile }} none  swap  sw  0 0"
+      when: swap_status.stdout == ""
