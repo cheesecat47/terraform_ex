@@ -1,0 +1,50 @@
+---
+- name: Set ntp
+  hosts: all
+  become: true
+
+  vars:
+    ntp_conf: /etc/ntpsec/ntp.conf
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Wait for dpkg lock
+      ansible.builtin.shell: while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 5; done
+      changed_when: false
+
+    - name: Install ntp package
+      ansible.builtin.apt:
+        name: ntp
+        state: present
+
+    - name: Backup ntp.conf
+      ansible.builtin.copy:
+        src: "{{ ntp_conf }}"
+        dest: "{{ ntp_conf }}.bak"
+        remote_src: false
+        force: false
+
+    - name: Configure NTP server - comment pool
+      ansible.builtin.replace:
+        path: "{{ ntp_conf }}"
+        regexp: '^(pool .*)'
+        replace: '# \1'
+
+    - name: Add NTP servers
+      ansible.builtin.lineinfile:
+        path: /etc/ntpsec/ntp.conf
+        insertafter: '^# pool 3.ubuntu.pool.ntp.org iburst'
+        line: "server {{ item }} iburst"
+      loop:
+        - time.bora.net
+        - time.nuri.net
+        - time.kriss.re.kr
+
+    - name: Restart NTP service
+      ansible.builtin.systemd:
+        name: ntp
+        state: restarted
+        enabled: yes

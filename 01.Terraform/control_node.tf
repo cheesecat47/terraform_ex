@@ -86,6 +86,7 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
       "/tmp/ansible/install_ansible.sh",
       "chmod 0400 /home/${var.vm_admin_username}/.ssh/id_rsa*",
       "ANSIBLE_HOST_KEY_CHECKING=False /home/${var.vm_admin_username}/.local/bin/ansible-playbook -i /tmp/ansible/inventory.yml /tmp/ansible/set_swap.yml",
+      "ANSIBLE_HOST_KEY_CHECKING=False /home/${var.vm_admin_username}/.local/bin/ansible-playbook -i /tmp/ansible/inventory.yml /tmp/ansible/set_ntp.yml",
     ]
   }
 }
