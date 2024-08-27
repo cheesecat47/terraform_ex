@@ -1,38 +1,38 @@
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
+  name     = "${var.resource_prefix}resource_group"
   location = var.location
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = "terraform_ex_vnet"
+  name                = "${var.resource_prefix}vnet"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 }
 
 resource "azurerm_subnet" "subnet_pub_1" {
-  name                 = "terraform_ex_subnet_pub_1"
+  name                 = "${var.resource_prefix}subnet_pub_1"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
 resource "azurerm_subnet" "subnet_pub_10" {
-  name                 = "terraform_ex_subnet_pub_10"
+  name                 = "${var.resource_prefix}subnet_pub_10"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.10.0/24"]
 }
 
 resource "azurerm_subnet" "subnet_prv_20" {
-  name                 = "terraform_ex_subnet_prv_20"
+  name                 = "${var.resource_prefix}subnet_prv_20"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.20.0/24"]
 }
 
 resource "azurerm_network_security_group" "nsg_ssh_http" {
-  name                = "terraform_ex_nsg_ssh_http"
+  name                = "${var.resource_prefix}nsg_ssh_http"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -62,7 +62,7 @@ resource "azurerm_network_security_group" "nsg_ssh_http" {
 }
 
 resource "azurerm_network_security_group" "nsg_ssh" {
-  name                = "terraform_ex_nsg_ssh"
+  name                = "${var.resource_prefix}nsg_ssh"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -80,14 +80,14 @@ resource "azurerm_network_security_group" "nsg_ssh" {
 }
 
 resource "azurerm_public_ip" "control_node_pubip" {
-  name                = "terraform_ex_control_node_pubip"
+  name                = "${var.resource_prefix}control_node_pubip"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
 }
 
 resource "azurerm_network_interface" "control_node_nic" {
-  name                = "terraform_ex_control_node_nic"
+  name                = "${var.resource_prefix}control_node_nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -106,7 +106,7 @@ resource "azurerm_network_interface_security_group_association" "control_node_ni
 }
 
 resource "azurerm_linux_virtual_machine" "vm_control_node" {
-  name                = "terraform_ex_vm_control_node"
+  name                = "${var.resource_prefix}vm_control_node"
   computer_name       = "ubuntu"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -118,7 +118,7 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
   ]
 
   os_disk {
-    name                 = "terraform_ex_control_node_os_disk"
+    name                 = "${var.resource_prefix}control_node_os_disk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -173,7 +173,7 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
 
 resource "azurerm_network_interface" "managed_node_nic" {
   count               = var.managed_node_count
-  name                = "terraform_ex_nic_managed_node_${count.index + 1}"
+  name                = "${var.resource_prefix}nic_managed_node_${count.index + 1}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -187,7 +187,7 @@ resource "azurerm_network_interface" "managed_node_nic" {
 
 resource "azurerm_linux_virtual_machine" "vm_managed_node" {
   count               = var.managed_node_count
-  name                = "terraform_ex_vm_managed_node_${count.index + 1}"
+  name                = "${var.resource_prefix}vm_managed_node_${count.index + 1}"
   computer_name       = "ubuntu"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -199,7 +199,7 @@ resource "azurerm_linux_virtual_machine" "vm_managed_node" {
   ]
 
   os_disk {
-    name                 = "terraform_ex_vm_managed_node_${count.index + 1}_os_disk"
+    name                 = "${var.resource_prefix}vm_managed_node_${count.index + 1}_os_disk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
