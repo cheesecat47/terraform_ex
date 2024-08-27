@@ -356,3 +356,6 @@ azureuser@ubuntu:~$
 ## 추가 참고 자료
 
 - <https://learn.microsoft.com/ko-kr/azure/virtual-machines/linux/quick-cluster-create-terraform?tabs=azure-cli>
+- <https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface>
+- <https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association>
+- <https://documentation.ubuntu.com/azure/en/latest/azure-how-to/instances/find-ubuntu-images/>

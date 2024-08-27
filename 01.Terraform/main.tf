@@ -10,15 +10,29 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
-resource "azurerm_subnet" "subnet" {
-  name                 = "terraform_ex_subnet"
+resource "azurerm_subnet" "subnet_pub_1" {
+  name                 = "terraform_ex_subnet_pub_1"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
+  address_prefixes     = ["10.0.1.0/24"]
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = "terraform_ex_nsg"
+resource "azurerm_subnet" "subnet_pub_10" {
+  name                 = "terraform_ex_subnet_pub_10"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.10.0/24"]
+}
+
+resource "azurerm_subnet" "subnet_prv_20" {
+  name                 = "terraform_ex_subnet_prv_20"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.20.0/24"]
+}
+
+resource "azurerm_network_security_group" "nsg_ssh_http" {
+  name                = "terraform_ex_nsg_ssh_http"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -47,32 +61,48 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-resource "azurerm_public_ip" "pubip" {
-  name                = "terraform_ex_pubip"
+resource "azurerm_network_security_group" "nsg_ssh" {
+  name                = "terraform_ex_nsg_ssh"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-Inbound"
+    priority                   = 200
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    source_port_range          = "*"
+    destination_address_prefix = "*"
+    destination_port_range     = "22"
+  }
+}
+
+resource "azurerm_public_ip" "control_node_pubip" {
+  name                = "terraform_ex_control_node_pubip"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
 }
 
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
-resource "azurerm_network_interface" "nic" {
-  name                = "terraform_ex_nic"
+resource "azurerm_network_interface" "control_node_nic" {
+  name                = "terraform_ex_control_node_nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = azurerm_subnet.subnet.id
+    subnet_id                     = azurerm_subnet.subnet_pub_1.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.2.10"
-    public_ip_address_id          = azurerm_public_ip.pubip.id
+    private_ip_address            = "10.0.1.10"
+    public_ip_address_id          = azurerm_public_ip.control_node_pubip.id
   }
 }
 
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association
-resource "azurerm_network_interface_security_group_association" "nic_nsg_association" {
-  network_interface_id      = azurerm_network_interface.nic.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
+resource "azurerm_network_interface_security_group_association" "control_node_nic_nsg_association" {
+  network_interface_id      = azurerm_network_interface.control_node_nic.id
+  network_security_group_id = azurerm_network_security_group.nsg_ssh.id
 }
 
 resource "azurerm_linux_virtual_machine" "vm_control_node" {
@@ -84,16 +114,15 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
   admin_username      = var.vm_admin_username
 
   network_interface_ids = [
-    azurerm_network_interface.nic.id,
+    azurerm_network_interface.control_node_nic.id
   ]
 
   os_disk {
-    name                 = "terraform_ex_vm_os_disk"
+    name                 = "terraform_ex_control_node_os_disk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
 
-  # https://documentation.ubuntu.com/azure/en/latest/azure-how-to/instances/find-ubuntu-images/
   source_image_reference {
     publisher = "Canonical"
     offer     = "ubuntu-24_04-lts"
@@ -150,9 +179,9 @@ resource "azurerm_network_interface" "managed_node_nic" {
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = azurerm_subnet.subnet.id
+    subnet_id                     = azurerm_subnet.subnet_pub_10.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.2.10${count.index}"
+    private_ip_address            = "10.0.10.${count.index + 11}"
   }
 }
 
@@ -170,7 +199,7 @@ resource "azurerm_linux_virtual_machine" "vm_managed_node" {
   ]
 
   os_disk {
-    name                 = "terraform_ex_vm_os_disk_${count.index + 1}"
+    name                 = "terraform_ex_vm_managed_node_${count.index + 1}_os_disk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }

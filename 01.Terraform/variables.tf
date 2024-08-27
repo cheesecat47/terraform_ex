@@ -11,5 +11,5 @@ variable "vm_admin_username" {
 }
 
 variable "managed_node_count" {
-  default = 3
+  default = 2
 }

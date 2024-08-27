@@ -3,7 +3,7 @@ output "resource_group_id" {
 }
 
 output "control_node_public_ip" {
-  value = azurerm_public_ip.pubip.ip_address
+  value = azurerm_public_ip.control_node_pubip.ip_address
 }
 
 output "managed_node_private_ip" {
