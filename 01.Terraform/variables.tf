@@ -10,6 +10,6 @@ variable "vm_admin_username" {
   default = "azureuser"
 }
 
-variable "managed_node_count" {
+variable "was_count" {
   default = 2
 }

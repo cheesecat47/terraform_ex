@@ -24,7 +24,7 @@ resource "azurerm_network_interface_security_group_association" "control_node_ni
   network_security_group_id = azurerm_network_security_group.nsg_ssh.id
 }
 
-resource "azurerm_linux_virtual_machine" "vm_control_node" {
+resource "azurerm_linux_virtual_machine" "control_node_vm" {
   name                = "${var.resource_prefix}vm_control_node"
   computer_name       = "ubuntu"
   location            = azurerm_resource_group.rg.location
@@ -55,7 +55,7 @@ resource "azurerm_linux_virtual_machine" "vm_control_node" {
   }
 
   depends_on = [
-    azurerm_linux_virtual_machine.vm_managed_node,
+    azurerm_linux_virtual_machine.was_vm,
   ]
 
   connection {

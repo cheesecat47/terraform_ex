@@ -6,6 +6,6 @@ output "control_node_public_ip" {
   value = azurerm_public_ip.control_node_pubip.ip_address
 }
 
-output "managed_node_private_ip" {
-  value = azurerm_linux_virtual_machine.vm_managed_node[*].private_ip_address
+output "was_private_ip" {
+  value = azurerm_linux_virtual_machine.was_vm[*].private_ip_address
 }
